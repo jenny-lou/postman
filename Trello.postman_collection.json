@@ -1,0 +1,395 @@
+{
+	"info": {
+		"_postman_id": "ad67529f-6353-437b-aad1-9139014691b6",
+		"name": "Trello",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9622781"
+	},
+	"item": [
+		{
+			"name": "Create a Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let idBoard = pm.response.json().id\r",
+							"pm.collectionVariables.set(\"idBoard\", idBoard);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Board should be created\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(\"My Board\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Permission level is private\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.prefs.permissionLevel).to.eql(\"private\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/:version/boards/?name=My Board&key={{apiKey}}&token={{token}}&defaultLists=false",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						":version",
+						"boards",
+						""
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "My Board"
+						},
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "defaultLists",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "version",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let idList = pm.response.json().id\r",
+							"pm.collectionVariables.set(\"idListDone\", idList);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"isClosed\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.closed).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check list Nameis TODO\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(\"TODO\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check list Name is DONE\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(\"DONE\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/:version/list/?name=DONE&key={{apiKey}}&token={{token}}&idBoard={{idBoard}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						":version",
+						"list",
+						""
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "DONE"
+						},
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "idBoard",
+							"value": "{{idBoard}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "version",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Card",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let card_shortLink = pm.response.json().shortLink;\r",
+							"pm.collectionVariables.set(\"idCard\", card_shortLink);\r",
+							"let id_board = pm.collectionVariables.get(\"idBoard\");\r",
+							"let id_list_todo = pm.collectionVariables.get(\"idListToDo\");\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"isClosed\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.closed).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check card Name\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(\"Learn Postman\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check id board\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.idBoard).to.eql(id_board);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check list Name is TODO\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.idList).to.eql(id_list_todo);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/:version/cards/?key={{apiKey}}&token={{token}}&idList={{idListToDo}}&name=Learn Postman",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						":version",
+						"cards",
+						""
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "idList",
+							"value": "{{idListToDo}}"
+						},
+						{
+							"key": "name",
+							"value": "Learn Postman"
+						}
+					],
+					"variable": [
+						{
+							"key": "version",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Move a Card",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let id_card = pm.response.id;\r",
+							"let id_board = pm.collectionVariables.get(\"idBoard\");\r",
+							"let id_list_todo = pm.collectionVariables.get(\"idListToDo\");\r",
+							"let id_list_done = pm.collectionVariables.get(\"idListDone\")\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"isClosed\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.closed).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check card Name\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(\"Learn Postman\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check id Board\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.idBoard).to.eql(id_board);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check list id is TODO\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.idList).to.eql(id_list_todo);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"check list id is DONE\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.idList).to.eql(id_list_done);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/:version/cards/:cardId?key={{apiKey}}&token={{token}}&idList={{idListDone}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						":version",
+						"cards",
+						":cardId"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "idList",
+							"value": "{{idListDone}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "version",
+							"value": "1"
+						},
+						{
+							"key": "cardId",
+							"value": "{{idCard}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiKey",
+			"value": "APIKEY",
+			"type": "string"
+		},
+		{
+			"key": "apiSecret",
+			"value": "APISecret",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "ServerToken",
+			"type": "string"
+		},
+		{
+			"key": "baseUrl",
+			"value": "https://api.trello.com",
+			"type": "string"
+		},
+		{
+			"key": "idBoard",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idListToDo",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idCard",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idListDone",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
