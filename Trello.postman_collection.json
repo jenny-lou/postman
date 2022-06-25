@@ -46,7 +46,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/:version/boards/?name=My Board&key={{apiKey}}&token={{token}}&defaultLists=false",
+					"raw": "{{baseUrl}}/:version/boards/?name=My Board 2&key={{apiKey}}&token={{token}}&defaultLists=false",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -58,7 +58,7 @@
 					"query": [
 						{
 							"key": "name",
-							"value": "My Board"
+							"value": "My Board 2"
 						},
 						{
 							"key": "key",
@@ -402,7 +402,7 @@
 					}
 				],
 				"url": {
-					"raw": "https://api.trello.com/1/members/{id}/boards?key=APIKey&token=APIToken",
+					"raw": "https://api.trello.com/1/members/:id/boards?key={{apiKey}}&token={{token}}",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -412,17 +412,23 @@
 					"path": [
 						"1",
 						"members",
-						"{id}",
+						":id",
 						"boards"
 					],
 					"query": [
 						{
 							"key": "key",
-							"value": "APIKey"
+							"value": "{{apiKey}}"
 						},
 						{
 							"key": "token",
-							"value": "APIToken"
+							"value": "{{token}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{username}}"
 						}
 					]
 				}
@@ -489,6 +495,10 @@
 		{
 			"key": "idListTodo",
 			"value": ""
+		},
+		{
+			"key": "username",
+			"value": "username"
 		}
 	]
 }
