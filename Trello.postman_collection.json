@@ -91,7 +91,13 @@
 					"script": {
 						"exec": [
 							"let idList = pm.response.json().id\r",
-							"pm.collectionVariables.set(\"idListDone\", idList);\r",
+							"let idListName = pm.response.json().name\r",
+							"if(idListName == \"DONE\"){\r",
+							"    pm.collectionVariables.set(\"idListDone\", idList);\r",
+							"} else {\r",
+							"    pm.collectionVariables.set(\"idListTodo\", idList);\r",
+							"}\r",
+							"\r",
 							"\r",
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -121,7 +127,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/:version/list/?name=DONE&key={{apiKey}}&token={{token}}&idBoard={{idBoard}}",
+					"raw": "{{baseUrl}}/:version/list/?name=TODO&key={{apiKey}}&token={{token}}&idBoard={{idBoard}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -133,7 +139,7 @@
 					"query": [
 						{
 							"key": "name",
-							"value": "DONE"
+							"value": "TODO"
 						},
 						{
 							"key": "key",
@@ -204,7 +210,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/:version/cards/?key={{apiKey}}&token={{token}}&idList={{idListToDo}}&name=Learn Postman",
+					"raw": "{{baseUrl}}/:version/cards/?key={{apiKey}}&token={{token}}&idList={{idListTodo}}&name=Learn Postman",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -224,7 +230,7 @@
 						},
 						{
 							"key": "idList",
-							"value": "{{idListToDo}}"
+							"value": "{{idListTodo}}"
 						},
 						{
 							"key": "name",
@@ -384,6 +390,44 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get All Boards ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "https://api.trello.com/1/members/{id}/boards?key=APIKey&token=APIToken",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"members",
+						"{id}",
+						"boards"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "APIKey"
+						},
+						{
+							"key": "token",
+							"value": "APIToken"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -433,11 +477,6 @@
 			"type": "string"
 		},
 		{
-			"key": "idListToDo",
-			"value": "",
-			"type": "string"
-		},
-		{
 			"key": "idCard",
 			"value": "",
 			"type": "string"
@@ -446,6 +485,10 @@
 			"key": "idListDone",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "idListTodo",
+			"value": ""
 		}
 	]
 }
