@@ -15,13 +15,14 @@
 						"exec": [
 							"let idBoard = pm.response.json().id\r",
 							"pm.collectionVariables.set(\"idBoard\", idBoard);\r",
+							"let boardName = pm.environment.get(\"boardName\");\r",
 							"\r",
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"pm.test(\"Board should be created\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.name).to.eql(\"My Board\");\r",
+							"    pm.expect(jsonData.name).to.eql(`${boardName}`);\r",
 							"});\r",
 							"\r",
 							"pm.test(\"Permission level is private\", function () {\r",
@@ -36,6 +37,18 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
+							"// function range(start, end) {\r",
+							"//   return Array(end - start + 1).fill().map((_, idx) => start + idx)\r",
+							"// }\r",
+							"\r",
+							"let currNum = pm.environment.get(\"boardNum\");\r",
+							"pm.environment.unset(\"boardName\");\r",
+							"\r",
+							"let newNum = currNum + 1\r",
+							"pm.environment.set(\"boardNum\", newNum);\r",
+							"pm.environment.set(\"boardName\", `My Board ${newNum}`);\r",
+							"\r",
+							"\r",
 							""
 						],
 						"type": "text/javascript"
@@ -46,7 +59,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/:version/boards/?name=My Board 2&key={{apiKey}}&token={{token}}&defaultLists=false",
+					"raw": "{{baseUrl}}/:version/boards/?name={{boardName}}&key={{apiKey}}&token={{token}}&defaultLists=false",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -58,7 +71,7 @@
 					"query": [
 						{
 							"key": "name",
-							"value": "My Board 2"
+							"value": "{{boardName}}"
 						},
 						{
 							"key": "key",
@@ -336,63 +349,40 @@
 			"response": []
 		},
 		{
-			"name": "Delete a Board",
+			"name": "Get All Boards ID",
 			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
+							"let res = pm.response.json()\r",
+							"let boardNum = res.length\r",
+							"console.log(boardNum)\r",
 							"\r",
-							"pm.test(\"Check if Board is null\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData._value).to.eql(null);\r",
-							"});"
+							"if (boardNum > 0){\r",
+							"    let boardID = res[boardNum-1].id\r",
+							"    pm.environment.set(\"boardNum\", boardNum);\r",
+							"    pm.environment.set(\"boardID\", boardID);\r",
+							"    pm.environment.set(\"boardName\", `My Board ${boardNum}`);\r",
+							"} else {\r",
+							"    pm.environment.set(\"boardNum\", 0);\r",
+							"    \r",
+							"}\r",
+							""
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "https://api.trello.com/1/boards/:id?key={{apiKey}}&token={{token}}",
-					"protocol": "https",
-					"host": [
-						"api",
-						"trello",
-						"com"
-					],
-					"path": [
-						"1",
-						"boards",
-						":id"
-					],
-					"query": [
-						{
-							"key": "key",
-							"value": "{{apiKey}}"
-						},
-						{
-							"key": "token",
-							"value": "{{token}}"
-						}
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "{{idBoard}}"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Boards ID",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -429,6 +419,71 @@
 						{
 							"key": "id",
 							"value": "{{username}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check if Board is null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData._value).to.eql(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://api.trello.com/1/boards/:id?key={{apiKey}}&token={{token}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						":id"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{boardID}}"
 						}
 					]
 				}
@@ -499,6 +554,10 @@
 		{
 			"key": "username",
 			"value": "username"
+		},
+		{
+			"key": "randBaseUrl",
+			"value": "https://api.random.org/json-rpc/4/invoke"
 		}
 	]
 }
